@@ -1,0 +1,28 @@
+﻿@model ImageBrowser.Models.FolderModel
+@{
+    string folderDisplayName = Model.CurrentFolder.Replace(Path.DirectorySeparatorChar + "", " > ").Or("Root folder");
+    
+    ViewBag.Title = folderDisplayName;
+}
+
+<h2>@folderDisplayName</h2>
+
+<div class="thumbnails">
+    @foreach (var folder in Model.Folders)
+    {
+        <div class="thumbnail" style="width: 160px; display: inline-block">
+            @Html.ActionLink(folder.ShortName, "Index", new { path = folder.RelativeName })
+        </div>
+    }
+
+    @foreach (var file in Model.Files)
+    {
+        <div class="thumbnail" style="width: 160px; display: inline-block">
+            <a href="@Url.Action("Raw", new {path = file.RelativeName})" target="_blank">
+                <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" />
+            </a>
+            <br/>
+            @file.ShortName
+        </div>
+    }
+</div>
