@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -93,29 +94,43 @@ namespace ImageBrowser.Controllers
 
             if (!System.IO.File.Exists(thumbnailPath))
             {
-                // TODO: This needs to be adjusted to return a thumbnail with more than the first image of the folger
+                int miniSize = Application.ThumbnailSize/2;
 
                 var settings = new ResizeSettings
                 {
                     Format = "jpg",
                     BackgroundColor = Color.Black,
                     Anchor = ContentAlignment.MiddleCenter,
-                    Width = Application.ThumbnailSize,
-                    Height = Application.ThumbnailSize,
+                    Width = miniSize,
+                    Height = miniSize,
                     Mode = FitMode.Crop
                 };
 
-                string firstImage = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.AllDirectories).FirstOrDefault();
-                if (!System.IO.File.Exists(firstImage))
-                {
-                    return HttpNotFound();
-                }
-
                 Directory.CreateDirectory(Path.GetDirectoryName(thumbnailPath));
 
-                using (var fs = System.IO.File.OpenWrite(thumbnailPath))
+                string[] firstImages = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.AllDirectories).Take(4).ToArray();
+                var resizedImages = new MemoryStream[firstImages.Length];
+                
+                using (var destBitmap = new Bitmap(Application.ThumbnailSize, Application.ThumbnailSize, PixelFormat.Format24bppRgb))
+                using (Graphics destGraphics = Graphics.FromImage(destBitmap))
                 {
-                    ImageBuilder.Current.Build(firstImage, fs, settings);
+
+                    for (int i = 0; i < firstImages.Length; i++)
+                    {
+                        resizedImages[i] = new MemoryStream();
+                        ImageBuilder.Current.Build(firstImages[i], resizedImages[i], settings);
+
+                        using (var srcBitmap = System.Drawing.Image.FromStream(resizedImages[i]))
+                        {
+                            destGraphics.DrawImageUnscaled(srcBitmap, (i%2)*miniSize, (i/2)*miniSize);
+                        }
+                    }
+
+                    ImageCodecInfo jpeg = ImageCodecInfo.GetImageEncoders().Single(x => x.MimeType == "image/jpeg");
+                    var parameters = new EncoderParameters(1);
+                    parameters.Param[0] = new EncoderParameter(Encoder.Quality, 95L);
+
+                    destBitmap.Save(thumbnailPath, jpeg, parameters);
                 }
             }
 
