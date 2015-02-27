@@ -20,13 +20,13 @@ namespace ImageBrowser.Models
                 : CurrentFolder.Substring(Application.ImagesRoot.Length + 1);
 
             Files = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.TopDirectoryOnly)
-                .Select(fullpath => new Item(fullpath, fullpath.Substring(Application.ImagesRoot.Length + 1), Path.GetFileName(fullpath)))
+                .Select(fullpath => new Item(fullpath))
                 .Where(i => !i.ShortName.StartsWith("."))
                 .OrderBy(i => i.ShortName)
                 .ToArray();
 
             Folders = Directory.EnumerateDirectories(absolutePath)
-                .Select(fullpath => new Item(fullpath, fullpath.Substring(Application.ImagesRoot.Length + 1), Path.GetFileName(fullpath)))
+                .Select(fullpath => new Item(fullpath))
                 .Where(i => !i.ShortName.StartsWith("."))
                 .OrderBy(i => i.ShortName)
                 .ToArray();
@@ -34,23 +34,5 @@ namespace ImageBrowser.Models
 
         public Item[] Files { get; private set; }
         public Item[] Folders { get; private set; }
-
-        #region Nested type: Item
-
-        public class Item
-        {
-            public Item(string fullName, string relativeName, string shortName)
-            {
-                FullName = fullName;
-                RelativeName = relativeName;
-                ShortName = shortName;
-            }
-
-            public string FullName { get; private set; }
-            public string RelativeName { get; private set; }
-            public string ShortName { get; private set; }
-        }
-
-        #endregion
     }
 }

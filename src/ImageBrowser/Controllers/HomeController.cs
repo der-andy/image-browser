@@ -25,6 +25,17 @@ namespace ImageBrowser.Controllers
             return View("Folder", model);
         }
 
+        public ActionResult Image(string path)
+        {
+            string absolutePath = Application.GetAbsolutePath(path);
+            if (!System.IO.File.Exists(absolutePath))
+            {
+                return HttpNotFound();
+            }
+
+            return View(new ImageModel(absolutePath));
+        }
+
         public ActionResult Thumbnail(string path)
         {
             string thumbnailRoot = Server.MapPath("~/App_Data/Thumbnails");

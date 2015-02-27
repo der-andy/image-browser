@@ -11,5 +11,10 @@ namespace ImageBrowser
         {
             return string.IsNullOrEmpty(s) ? fallback : s;
         }
+
+        public static T Or<T>(this T x, T fallback)
+        {
+            return default(T).Equals(x) ? fallback : x;
+        }
     }
 }

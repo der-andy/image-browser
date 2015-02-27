@@ -1,0 +1,91 @@
+﻿@using System
+@using System.Globalization
+@using ExifLib
+@model ImageBrowser.Models.ImageModel
+@{
+    ViewBag.Title = "View image";
+}
+
+@section scripts {
+    <script type="text/javascript">
+
+        $(function() {
+            $(window).resize(function() {
+                arrangeFaces();
+            });
+
+            arrangeFaces();
+        });
+
+        function arrangeFaces() {
+            var w = $('#main-image').width();
+            var h = $('#main-image').height();
+
+            $('.face').each(function() {
+                $(this).css({
+                    left: (w * $(this).data('left')) + 'px',
+                    top: (h * $(this).data('top')) + 'px',
+                    width: (w * $(this).data('width')) + 'px',
+                    height: (h * $(this).data('height')) + 'px'
+                });
+
+                $(this).show();
+            });
+        }
+
+    </script>
+}
+
+<h2>Image: @Model.Item.RelativeName</h2>
+
+<div style="position: relative">
+    <a href="@Url.Action("Raw", new {path = Model.Item.RelativeName})" target="_blank">
+        <img id="main-image" src="@Url.Action("Raw", new {path = Model.Item.RelativeName})" style="width: 100%; height: auto" />
+    </a>
+    
+    @foreach (var face in Model.Faces)
+    {
+        <div class="face" style="position: absolute; display: none; border: 1px solid white; padding: 4px; color: white;"
+             data-left="@face.Item1.Left.ToString(CultureInfo.InvariantCulture)"
+             data-top="@face.Item1.Top.ToString(CultureInfo.InvariantCulture)"
+             data-width="@face.Item1.Width.ToString(CultureInfo.InvariantCulture)"
+             data-height="@face.Item1.Height.ToString(CultureInfo.InvariantCulture)">
+            <span style="padding: 2px 4px; display: inline-block; background-color: rgba(0, 0, 0, 0.5)">
+                @face.Item2
+            </span>
+        </div>
+    }
+</div>
+
+<div>
+    <table class="table table-striped">
+        <tr>
+            <td>Schlüsselwörter</td>
+            <td>@string.Join(", ", Model.Keywords)</td>
+        </tr>
+        <tr>
+            <td>Auflösung (Pixel)</td>
+            <td>@Model.Width &times; @Model.Height (@((Model.Width * Model.Height / 1000000.0).ToString("N1")) MP)</td>
+        </tr>
+        <tr>
+            <td>Kamerahersteller</td>
+            <td>@Model.GetExifData(ExifTags.Make).Or("-")</td>
+        </tr>
+        <tr>
+            <td>Kameramodell</td>
+            <td>@Model.GetExifData(ExifTags.Model).Or("-")</td>
+        </tr>
+        <tr>
+            <td>Belichtungszeit</td>
+            <td>@Model.GetExifData(ExifTags.ExposureTime).Or("-")</td>
+        </tr>
+        <tr>
+            <td>ISO-Wert</td>
+            <td>@Model.GetExifData(ExifTags.ISOSpeedRatings).Or("-")</td>
+        </tr>
+        <tr>
+            <td>Blende</td>
+            <td>@Model.GetExifData(ExifTags.FNumber).Or("-")</td>
+        </tr>
+    </table>
+</div>

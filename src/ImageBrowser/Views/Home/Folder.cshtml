@@ -1,4 +1,5 @@
-﻿@model ImageBrowser.Models.FolderModel
+﻿@using System.IO
+@model ImageBrowser.Models.FolderModel
 @{
     string folderDisplayName = Model.CurrentFolder.Replace(Path.DirectorySeparatorChar + "", " > ").Or("Root folder");
     
@@ -18,8 +19,8 @@
     @foreach (var file in Model.Files)
     {
         <div class="thumbnail" style="width: 160px; display: inline-block">
-            <a href="@Url.Action("Raw", new {path = file.RelativeName})" target="_blank">
-                <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" />
+            <a href="@Url.Action("Image", new {path = file.RelativeName})">
+                <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
             </a>
             <br/>
             @file.ShortName
