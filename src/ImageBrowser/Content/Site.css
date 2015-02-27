@@ -18,9 +18,38 @@ textarea {
     max-width: 280px;
 }
 
+h4 {
+    color: #888;
+}
+
 .thumb {
     /*border: 1px solid white;*/
     display: inline-block;
+    position: relative;
+    overflow: hidden;
+}
+
+.thumb > .caption {
+    position: absolute;
+    bottom: 2px;
+    left: 8px;
+    color: white;
+    font-size: 1.25em;
+    opacity: 0.5;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    transition: opacity 0.3s;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.thumb:hover > .caption {
+    opacity: 1;
+}
+
+#main-image {
+    max-width: 100%;
+    height: auto;
 }
 
 .face {

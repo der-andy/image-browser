@@ -55,7 +55,7 @@
 
 <div style="position: relative">
     <a href="@Url.Action("Raw", new {path = Model.Item.RelativeName})" target="_blank">
-        <img id="main-image" src="@Url.Action("Raw", new {path = Model.Item.RelativeName})" style="width: 100%; height: auto" />
+        <img id="main-image" src="@Url.Action("Raw", new {path = Model.Item.RelativeName})" />
     </a>
     
     @foreach (var face in Model.Faces)
@@ -74,11 +74,11 @@
     <table class="table table-striped">
         <tr>
             <td>Timestamp</td>
-            <td>@Model.GetExifData(ExifTags.DateTimeOriginal)</td>
+            <td>@Model.GetExifData(ExifTags.DateTimeOriginal).Or("-")</td>
         </tr>
         <tr>
             <td>Keywords</td>
-            <td>@string.Join(", ", Model.Keywords)</td>
+            <td>@string.Join(", ", Model.Keywords).Or("-")</td>
         </tr>
         <tr>
             <td>Resolution (pixels)</td>

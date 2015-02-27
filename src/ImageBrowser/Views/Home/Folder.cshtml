@@ -1,25 +1,34 @@
-﻿@using System.IO
-@model ImageBrowser.Models.FolderModel
+﻿@model ImageBrowser.Models.FolderModel
 @{
-    string folderDisplayName = Model.CurrentFolder.Replace(Path.DirectorySeparatorChar + "", " > ").Or("Root folder");
-    
-    ViewBag.Title = folderDisplayName;
+    ViewBag.Title = Model.DisplayName;
 }
 
-<h2>@folderDisplayName</h2>
+@section styles {
+    <style type="text/css">
+        .thumb > img {
+            width: @(Application.ThumbnailSize)px;
+            height: @(Application.ThumbnailSize)px;
+        }
+    </style>
+}
 
-<div class="thumbnails">
+<h2>@Model.DisplayName</h2>
+<h4>(@Model.Description)</h4>
+
+<div>
     @foreach (var folder in Model.Folders)
     {
-        <a class="thumb" style="width: @(Application.ThumbnailSize)px" href="@Url.Action("Index", new { path = folder.RelativeName })" data-toggle="tooltip" data-placement="bottom" title="Folder: @folder.ShortName">
+        <a class="thumb" href="@Url.Action("Index", new { path = folder.RelativeName })" data-toggle="tooltip" data-placement="bottom" title="Folder: @folder.ShortName">
             <img src="@Url.Action("FolderThumbnail", new {path = folder.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <div class="caption">@folder.ShortName</div>
         </a>
     }
 
     @foreach (var file in Model.Files)
     {
-        <a class="thumb" style="width: @(Application.ThumbnailSize)px" href="@Url.Action("Image", new {path = file.RelativeName})" data-toggle="tooltip" data-placement="bottom" title="@file.ShortName">
+        <a class="thumb" href="@Url.Action("Image", new {path = file.RelativeName})" data-toggle="tooltip" data-placement="bottom" title="@file.ShortName">
             <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <div class="caption">@file.ShortNameWithoutExtension</div>
         </a>
     }
 </div>

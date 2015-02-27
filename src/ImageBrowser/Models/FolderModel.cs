@@ -10,14 +10,46 @@ namespace ImageBrowser.Models
     {
         public string CurrentFolder { get; private set; }
 
+        public string DisplayName
+        {
+            get { return CurrentFolder.Replace(Path.DirectorySeparatorChar + "", " > ").Or("Root folder"); }
+        }
+
+        public string Description
+        {
+            get
+            {
+                var items = new List<string>();
+
+                if (Folders.Length == 1)
+                {
+                    items.Add("1 subfolder");
+                }
+                else if (Folders.Length > 1)
+                {
+                    items.Add(Folders.Length + " subfolders");
+                }
+
+                if (Files.Length == 1)
+                {
+                    items.Add("1 image");
+                }
+                else if (Files.Length > 1)
+                {
+                    items.Add(Files.Length + " images");
+                }
+
+                return string.Join(", ", items).Or("Empty folder");
+            }
+        }
+
         public FolderModel(string folder)
         {
             string absolutePath = Application.GetAbsolutePath(folder);
-            CurrentFolder = absolutePath;
 
-            CurrentFolder = CurrentFolder == Application.ImagesRoot
+            CurrentFolder = absolutePath == Application.ImagesRoot
                 ? ""
-                : CurrentFolder.Substring(Application.ImagesRoot.Length + 1);
+                : absolutePath.Substring(Application.ImagesRoot.Length + 1);
 
             Files = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.TopDirectoryOnly)
                 .Select(fullpath => new Item(fullpath))

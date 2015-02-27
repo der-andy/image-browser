@@ -4,34 +4,22 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Windows.Media.Imaging;
 using ExifLib;
-using Microsoft.Ajax.Utilities;
 
 namespace ImageBrowser.Models
 {
     public class ImageModel
     {
-        private readonly string _absolutePath;
         private readonly ExifReader _exif;
-
-        public Tuple<RectangleF, string>[] Faces { get; private set; }
-
-        public Item Item { get; private set; }
-
-        public string[] Keywords { get; private set; }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
 
         public ImageModel(string absolutePath)
         {
-            _absolutePath = absolutePath;
+            string absolutePath1 = absolutePath;
 
             try
             {
-                _exif = new ExifReader(_absolutePath);
+                _exif = new ExifReader(absolutePath1);
             }
             catch (ExifLibException)
             {
@@ -40,18 +28,18 @@ namespace ImageBrowser.Models
 
             Item = new Item(absolutePath);
 
-            var picasaIni = Path.Combine(Path.GetDirectoryName(_absolutePath), ".picasa.ini");
+            string picasaIni = Path.Combine(Path.GetDirectoryName(absolutePath1), ".picasa.ini");
             if (File.Exists(picasaIni))
             {
                 var p = new PicasaReader(picasaIni);
-                Faces = p.GetFaces(Path.GetFileName(_absolutePath)).ToArray();
+                Faces = p.GetFaces(Path.GetFileName(absolutePath1)).ToArray();
             }
             else
             {
                 Faces = new Tuple<RectangleF, string>[0];
             }
 
-            using (var fs = File.OpenRead(absolutePath))
+            using (FileStream fs = File.OpenRead(absolutePath))
             {
                 var decoder = new JpegBitmapDecoder(fs, BitmapCreateOptions.None, BitmapCacheOption.None);
                 var metadata = decoder.Frames[0].Metadata as BitmapMetadata;
@@ -61,13 +49,22 @@ namespace ImageBrowser.Models
                 }
                 else
                 {
-                    Keywords = new[] {"(keine)"};
+                    Keywords = new string[0];
                 }
 
                 Width = decoder.Frames[0].PixelWidth;
                 Height = decoder.Frames[0].PixelHeight;
             }
         }
+
+        public Tuple<RectangleF, string>[] Faces { get; private set; }
+
+        public Item Item { get; private set; }
+
+        public string[] Keywords { get; private set; }
+
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
         public IEnumerable<ExifTags> GetAvailableExifTags()
         {

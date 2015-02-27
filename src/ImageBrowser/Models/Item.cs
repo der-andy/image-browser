@@ -13,6 +13,7 @@ namespace ImageBrowser.Models
             FullName = fullName;
             RelativeName = fullName.Substring(Application.ImagesRoot.Length + 1);
             ShortName = Path.GetFileName(fullName);
+            ShortNameWithoutExtension = Path.GetFileNameWithoutExtension(fullName);
         }
 
         /// <summary>
@@ -26,8 +27,13 @@ namespace ImageBrowser.Models
         public string RelativeName { get; private set; }
 
         /// <summary>
-        ///  Returns the file or folder name.
+        ///     Returns the file or folder name.
         /// </summary>
         public string ShortName { get; private set; }
+
+        /// <summary>
+        ///     Returns the file or folder name without extension.
+        /// </summary>
+        public string ShortNameWithoutExtension { get; private set; }
     }
 }
