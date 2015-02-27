@@ -11,19 +11,19 @@
 <div class="thumbnails">
     @foreach (var folder in Model.Folders)
     {
-        <div class="thumbnail" style="width: 160px; display: inline-block">
-            @Html.ActionLink(folder.ShortName, "Index", new { path = folder.RelativeName })
+        <div class="thumb" style="width: @(Application.ThumbnailSize)px; display: inline-block">
+            <a href="@Url.Action("Index", new { path = folder.RelativeName })" title="Folder: @folder.ShortName">
+                <img src="@Url.Action("FolderThumbnail", new {path = folder.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            </a>
         </div>
     }
 
     @foreach (var file in Model.Files)
     {
-        <div class="thumbnail" style="width: 160px; display: inline-block">
-            <a href="@Url.Action("Image", new {path = file.RelativeName})">
+        <div class="thumb" style="width: @(Application.ThumbnailSize)px; display: inline-block">
+            <a href="@Url.Action("Image", new {path = file.RelativeName})" title="@file.ShortName">
                 <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
             </a>
-            <br/>
-            @file.ShortName
         </div>
     }
 </div>

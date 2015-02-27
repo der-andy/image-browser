@@ -20,7 +20,10 @@ namespace ImageBrowser
         {
             var parser = new FileIniDataParser();
             _data = parser.ReadFile(picasaIniFile, Encoding.UTF8);
-            _names = _data.Sections["Contacts2"].ToDictionary(kd => kd.KeyName, kd => kd.Value);
+
+            _names = _data.Sections.ContainsSection("Contacts2")
+                ? _data.Sections["Contacts2"].ToDictionary(kd => kd.KeyName, kd => kd.Value)
+                : new Dictionary<string, string>();
         }
 
         public IEnumerable<Tuple<RectangleF, string>> GetFaces(string imageFileName)
@@ -35,6 +38,10 @@ namespace ImageBrowser
             KeyDataCollection section = _data.Sections[imageFileName];
 
             string facesString = section["faces"];
+            if (string.IsNullOrEmpty(facesString))
+            {
+                yield break;
+            }
 
             foreach (string face in facesString.Split(';'))
             {

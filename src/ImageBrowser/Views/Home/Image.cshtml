@@ -10,28 +10,43 @@
     <script type="text/javascript">
 
         $(function() {
-            $(window).resize(function() {
-                arrangeFaces();
-            });
+            function arrangeFaces() {
+                var w = $('#main-image').width();
+                var h = $('#main-image').height();
 
-            arrangeFaces();
-        });
+                $('.face').each(function() {
+                    $(this).css({
+                        left: (w * $(this).data('left')) + 'px',
+                        top: (h * $(this).data('top')) + 'px',
+                        width: (w * $(this).data('width')) + 'px',
+                        height: (h * $(this).data('height')) + 'px'
+                    });
 
-        function arrangeFaces() {
-            var w = $('#main-image').width();
-            var h = $('#main-image').height();
+                    $(this).show();
+                });
+            }
 
-            $('.face').each(function() {
-                $(this).css({
-                    left: (w * $(this).data('left')) + 'px',
-                    top: (h * $(this).data('top')) + 'px',
-                    width: (w * $(this).data('width')) + 'px',
-                    height: (h * $(this).data('height')) + 'px'
+            var showFaces = false;
+
+            if (typeof (Storage) !== 'undefined') {
+                showFaces = localStorage.getItem('showFaces') == 1;
+            }
+
+            if (showFaces) {
+                var loaded = false;
+
+                $(window).resize(function() {
+                    if (loaded) {
+                        arrangeFaces();
+                    }
                 });
 
-                $(this).show();
-            });
-        }
+                $('#main-image').load(function() {
+                    arrangeFaces();
+                    loaded = true;
+                });
+            }
+        });
 
     </script>
 }
@@ -45,20 +60,22 @@
     
     @foreach (var face in Model.Faces)
     {
-        <div class="face" style="position: absolute; display: none; border: 1px solid white; padding: 4px; color: white;"
+        <div class="face"
              data-left="@face.Item1.Left.ToString(CultureInfo.InvariantCulture)"
              data-top="@face.Item1.Top.ToString(CultureInfo.InvariantCulture)"
              data-width="@face.Item1.Width.ToString(CultureInfo.InvariantCulture)"
              data-height="@face.Item1.Height.ToString(CultureInfo.InvariantCulture)">
-            <span style="padding: 2px 4px; display: inline-block; background-color: rgba(0, 0, 0, 0.5)">
-                @face.Item2
-            </span>
+            <span>@face.Item2</span>
         </div>
     }
 </div>
 
 <div>
     <table class="table table-striped">
+        <tr>
+            <td>Aufnahmedatum</td>
+            <td>@Model.GetExifData(ExifTags.DateTimeOriginal)</td>
+        </tr>
         <tr>
             <td>Schlüsselwörter</td>
             <td>@string.Join(", ", Model.Keywords)</td>

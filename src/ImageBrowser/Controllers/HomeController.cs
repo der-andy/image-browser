@@ -75,6 +75,53 @@ namespace ImageBrowser.Controllers
             return File(thumbnailPath, "image/jpeg");
         }
 
+        public ActionResult FolderThumbnail(string path)
+        {
+            string thumbnailRoot = Server.MapPath("~/App_Data/Thumbnails");
+            string absolutePath = Application.GetAbsolutePath(path);
+
+            var di = new DirectoryInfo(absolutePath);
+
+            if (!di.Exists)
+            {
+                return HttpNotFound();
+            }
+
+            string hash = di.LastWriteTimeUtc.Ticks.ToString("x16");
+
+            var thumbnailPath = Path.Combine(thumbnailRoot, path, Application.ThumbnailSize + "_" + hash);
+
+            if (!System.IO.File.Exists(thumbnailPath))
+            {
+                // TODO: This needs to be adjusted to return a thumbnail with more than the first image of the folger
+
+                var settings = new ResizeSettings
+                {
+                    Format = "jpg",
+                    BackgroundColor = Color.Black,
+                    Anchor = ContentAlignment.MiddleCenter,
+                    Width = Application.ThumbnailSize,
+                    Height = Application.ThumbnailSize,
+                    Mode = FitMode.Crop
+                };
+
+                string firstImage = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.AllDirectories).FirstOrDefault();
+                if (!System.IO.File.Exists(firstImage))
+                {
+                    return HttpNotFound();
+                }
+
+                Directory.CreateDirectory(Path.GetDirectoryName(thumbnailPath));
+
+                using (var fs = System.IO.File.OpenWrite(thumbnailPath))
+                {
+                    ImageBuilder.Current.Build(firstImage, fs, settings);
+                }
+            }
+
+            return File(thumbnailPath, "image/jpeg");
+        }
+
         public ActionResult Raw(string path)
         {
             string absolutePath = Application.GetAbsolutePath(path);

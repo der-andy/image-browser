@@ -120,6 +120,13 @@ namespace ImageBrowser.Models
                 case ExifTags.ExifVersion:
                     return string.Join(" ", ((byte[]) value).Select(b => b.ToString("x02")));
 
+                case ExifTags.DateTime:
+                case ExifTags.DateTimeDigitized:
+                case ExifTags.DateTimeOriginal:
+                    DateTime dt;
+                    _exif.GetTagValue(tag, out dt);
+                    return string.Format("{0:ddd, yyyy-MM-dd HH:mm:ss}", dt);
+
                 default:
                     return value.ToString();
             }
