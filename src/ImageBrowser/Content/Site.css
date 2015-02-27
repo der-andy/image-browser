@@ -47,6 +47,14 @@ h4 {
     opacity: 1;
 }
 
+.thumb > .image {
+    /* start invisible until loaded */
+    display: none;
+}
+
+.thumb > .placeholder {
+}
+
 #main-image {
     max-width: 100%;
     height: auto;

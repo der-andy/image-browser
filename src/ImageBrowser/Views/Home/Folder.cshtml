@@ -5,11 +5,27 @@
 
 @section styles {
     <style type="text/css">
-        .thumb > img {
+        .thumb, .thumb > .image {
             width: @(Application.ThumbnailSize)px;
             height: @(Application.ThumbnailSize)px;
         }
+
+        .thumb > .placeholder {
+            margin-left: calc(@(Application.ThumbnailSize)px/2 - 16px);
+            margin-top: calc(@(Application.ThumbnailSize)px/2 - 16px);
+        }
     </style>
+}
+
+@section scripts {
+    <script type="text/javascript">
+        $(function() {
+            $('.thumb > .image').load(function () {
+                $(this).siblings('.placeholder').remove();
+                $(this).fadeIn();
+            });
+        });
+    </script>
 }
 
 <h2>@Model.DisplayName</h2>
@@ -19,7 +35,8 @@
     @foreach (var folder in Model.Folders)
     {
         <a class="thumb" href="@Url.Action("Index", new { path = folder.RelativeName })" data-toggle="tooltip" data-placement="bottom" title="Folder: @folder.ShortName">
-            <img src="@Url.Action("FolderThumbnail", new {path = folder.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <img class="image"  src="@Url.Action("FolderThumbnail", new {path = folder.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <img class="placeholder" src="~/Content/loading.gif" alt="Loading..." />
             <div class="caption">@folder.ShortName</div>
         </a>
     }
@@ -27,7 +44,8 @@
     @foreach (var file in Model.Files)
     {
         <a class="thumb" href="@Url.Action("Image", new {path = file.RelativeName})" data-toggle="tooltip" data-placement="bottom" title="@file.ShortName">
-            <img src="@Url.Action("Thumbnail", new {path = file.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <img class="image" src="@Url.Action("Thumbnail", new {path = file.RelativeName})" width="@Application.ThumbnailSize" height="@Application.ThumbnailSize" />
+            <img class="placeholder" src="~/Content/loading.gif" alt="Loading..."/>
             <div class="caption">@file.ShortNameWithoutExtension</div>
         </a>
     }
