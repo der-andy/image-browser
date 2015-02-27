@@ -73,35 +73,35 @@
 <div>
     <table class="table table-striped">
         <tr>
-            <td>Aufnahmedatum</td>
+            <td>Timestamp</td>
             <td>@Model.GetExifData(ExifTags.DateTimeOriginal)</td>
         </tr>
         <tr>
-            <td>Schlüsselwörter</td>
+            <td>Keywords</td>
             <td>@string.Join(", ", Model.Keywords)</td>
         </tr>
         <tr>
-            <td>Auflösung (Pixel)</td>
+            <td>Resolution (pixels)</td>
             <td>@Model.Width &times; @Model.Height (@((Model.Width * Model.Height / 1000000.0).ToString("N1")) MP)</td>
         </tr>
         <tr>
-            <td>Kamerahersteller</td>
+            <td>Camera brand</td>
             <td>@Model.GetExifData(ExifTags.Make).Or("-")</td>
         </tr>
         <tr>
-            <td>Kameramodell</td>
+            <td>Camera model</td>
             <td>@Model.GetExifData(ExifTags.Model).Or("-")</td>
         </tr>
         <tr>
-            <td>Belichtungszeit</td>
+            <td>Exposure time</td>
             <td>@Model.GetExifData(ExifTags.ExposureTime).Or("-")</td>
         </tr>
         <tr>
-            <td>ISO-Wert</td>
+            <td>ISO value</td>
             <td>@Model.GetExifData(ExifTags.ISOSpeedRatings).Or("-")</td>
         </tr>
         <tr>
-            <td>Blende</td>
+            <td>Aperture</td>
             <td>@Model.GetExifData(ExifTags.FNumber).Or("-")</td>
         </tr>
     </table>
