@@ -18,6 +18,11 @@ textarea {
     max-width: 280px;
 }
 
+.thumb {
+    /*border: 1px solid white;*/
+    display: inline-block;
+}
+
 .face {
     position: absolute;
     display: none;
