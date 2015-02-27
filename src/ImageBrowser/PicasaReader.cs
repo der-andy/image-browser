@@ -58,7 +58,7 @@ namespace ImageBrowser
 
                 string name = _names[m.Groups["face"].Value].Split(';').First();
 
-                string rect = m.Groups["rect"].Value;
+                string rect = m.Groups["rect"].Value.PadLeft(16, '0');
 
                 float left = int.Parse(rect.Substring(0, 4), NumberStyles.HexNumber)/65536.0f;
                 float top = int.Parse(rect.Substring(4, 4), NumberStyles.HexNumber)/65536.0f;
