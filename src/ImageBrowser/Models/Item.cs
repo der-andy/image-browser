@@ -11,7 +11,7 @@ namespace ImageBrowser.Models
         public Item(string fullName)
         {
             FullName = fullName;
-            RelativeName = fullName.Substring(Application.ImagesRoot.Length + 1);
+            RelativeName = fullName.Substring(Settings.Singleton.ImageRootPath.Length + 1);
             ShortName = Path.GetFileName(fullName);
             ShortNameWithoutExtension = Path.GetFileNameWithoutExtension(fullName);
         }
@@ -22,7 +22,7 @@ namespace ImageBrowser.Models
         public string FullName { get; private set; }
 
         /// <summary>
-        ///     Returns the file or folder path relative to the <see cref="Application.ImagesRoot"/>.
+        ///     Returns the file or folder path relative to the <see cref="Settings.ImageRootPath"/>.
         /// </summary>
         public string RelativeName { get; private set; }
 

@@ -11,14 +11,19 @@ using ImageResizer;
 
 namespace ImageBrowser.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         public ActionResult Index(string path)
         {
-            string absolutePath = Application.GetAbsolutePath(path);
+            if (!Directory.Exists(Settings.Singleton.ImageRootPath))
+            {
+                throw new Exception("Root path " + Settings.Singleton.ImageRootPath + " not found! Please check your configuration!");
+            }
+
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
             if (!Directory.Exists(absolutePath))
             {
-                return HttpNotFound();
+                throw new Exception("Path not found: " + path);
             }
 
             var model = new FolderModel(path);
@@ -28,7 +33,7 @@ namespace ImageBrowser.Controllers
 
         public ActionResult Image(string path)
         {
-            string absolutePath = Application.GetAbsolutePath(path);
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
             if (!System.IO.File.Exists(absolutePath))
             {
                 return HttpNotFound();
@@ -40,7 +45,7 @@ namespace ImageBrowser.Controllers
         public ActionResult Thumbnail(string path)
         {
             string thumbnailRoot = Server.MapPath("~/App_Data/Thumbnails");
-            string absolutePath = Application.GetAbsolutePath(path);
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
 
             var fi = new FileInfo(absolutePath);
 
@@ -51,7 +56,7 @@ namespace ImageBrowser.Controllers
             
             string hash = fi.LastWriteTimeUtc.Ticks.ToString("x16");
 
-            var thumbnailPath = Path.Combine(thumbnailRoot, path + "_" + Application.ThumbnailSize + "_" + hash);
+            var thumbnailPath = Path.Combine(thumbnailRoot, path + "_" + Settings.Singleton.ThumbnailSize + "_" + hash);
 
             if (!System.IO.File.Exists(thumbnailPath))
             {
@@ -60,8 +65,8 @@ namespace ImageBrowser.Controllers
                     Format = "jpg",
                     BackgroundColor = Color.Black,
                     Anchor = ContentAlignment.MiddleCenter,
-                    Width = Application.ThumbnailSize,
-                    Height = Application.ThumbnailSize,
+                    Width = Settings.Singleton.ThumbnailSize,
+                    Height = Settings.Singleton.ThumbnailSize,
                     Mode = FitMode.Crop
                 };
 
@@ -79,7 +84,7 @@ namespace ImageBrowser.Controllers
         public ActionResult FolderThumbnail(string path)
         {
             string thumbnailRoot = Server.MapPath("~/App_Data/Thumbnails");
-            string absolutePath = Application.GetAbsolutePath(path);
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
 
             var di = new DirectoryInfo(absolutePath);
 
@@ -90,11 +95,11 @@ namespace ImageBrowser.Controllers
 
             string hash = di.LastWriteTimeUtc.Ticks.ToString("x16");
 
-            var thumbnailPath = Path.Combine(thumbnailRoot, path, Application.ThumbnailSize + "_" + hash);
+            var thumbnailPath = Path.Combine(thumbnailRoot, path, Settings.Singleton.ThumbnailSize + "_" + hash);
 
             if (!System.IO.File.Exists(thumbnailPath))
             {
-                int miniSize = Application.ThumbnailSize/2;
+                int miniSize = Settings.Singleton.ThumbnailSize/2;
 
                 var settings = new ResizeSettings
                 {
@@ -111,7 +116,7 @@ namespace ImageBrowser.Controllers
                 string[] firstImages = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.AllDirectories).Take(4).ToArray();
                 var resizedImages = new MemoryStream[firstImages.Length];
                 
-                using (var destBitmap = new Bitmap(Application.ThumbnailSize, Application.ThumbnailSize, PixelFormat.Format24bppRgb))
+                using (var destBitmap = new Bitmap(Settings.Singleton.ThumbnailSize, Settings.Singleton.ThumbnailSize, PixelFormat.Format24bppRgb))
                 using (Graphics destGraphics = Graphics.FromImage(destBitmap))
                 {
 
@@ -139,7 +144,7 @@ namespace ImageBrowser.Controllers
 
         public ActionResult Raw(string path)
         {
-            string absolutePath = Application.GetAbsolutePath(path);
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
 
             if (!System.IO.File.Exists(absolutePath))
             {

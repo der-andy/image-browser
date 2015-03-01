@@ -45,11 +45,11 @@ namespace ImageBrowser.Models
 
         public FolderModel(string folder)
         {
-            string absolutePath = Application.GetAbsolutePath(folder);
+            string absolutePath = Settings.Singleton.GetAbsolutePath(folder);
 
-            CurrentFolder = absolutePath == Application.ImagesRoot
+            CurrentFolder = absolutePath == Settings.Singleton.ImageRootPath
                 ? ""
-                : absolutePath.Substring(Application.ImagesRoot.Length + 1);
+                : absolutePath.Substring(Settings.Singleton.ImageRootPath.Length + 1);
 
             Files = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.TopDirectoryOnly)
                 .Select(fullpath => new Item(fullpath))
