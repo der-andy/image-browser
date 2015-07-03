@@ -53,7 +53,7 @@ namespace ImageBrowser.Controllers
             {
                 return HttpNotFound();
             }
-            
+
             string hash = fi.LastWriteTimeUtc.Ticks.ToString("x16");
 
             var thumbnailPath = Path.Combine(thumbnailRoot, path + "_" + Settings.Singleton.ThumbnailSize + "_" + hash);
@@ -99,7 +99,7 @@ namespace ImageBrowser.Controllers
 
             if (!System.IO.File.Exists(thumbnailPath))
             {
-                int miniSize = Settings.Singleton.ThumbnailSize/2;
+                int miniSize = Settings.Singleton.ThumbnailSize / 2;
 
                 var settings = new ResizeSettings
                 {
@@ -115,7 +115,7 @@ namespace ImageBrowser.Controllers
 
                 string[] firstImages = Directory.EnumerateFiles(absolutePath, "*.jpg", SearchOption.AllDirectories).Take(4).ToArray();
                 var resizedImages = new MemoryStream[firstImages.Length];
-                
+
                 using (var destBitmap = new Bitmap(Settings.Singleton.ThumbnailSize, Settings.Singleton.ThumbnailSize, PixelFormat.Format24bppRgb))
                 using (Graphics destGraphics = Graphics.FromImage(destBitmap))
                 {
@@ -127,7 +127,7 @@ namespace ImageBrowser.Controllers
 
                         using (var srcBitmap = System.Drawing.Image.FromStream(resizedImages[i]))
                         {
-                            destGraphics.DrawImageUnscaled(srcBitmap, (i%2)*miniSize, (i/2)*miniSize);
+                            destGraphics.DrawImageUnscaled(srcBitmap, (i % 2) * miniSize, (i / 2) * miniSize);
                         }
                     }
 
@@ -140,6 +140,45 @@ namespace ImageBrowser.Controllers
             }
 
             return File(thumbnailPath, "image/jpeg");
+        }
+
+        public ActionResult PlaceHolder(int width, int height)
+        {
+            using (var bmp = new Bitmap(width, height, PixelFormat.Format24bppRgb))
+            using (var ms = new MemoryStream())
+            {
+                bmp.Save(ms, ImageFormat.Png);
+                return File(ms.ToArray(), "image/png");
+            }
+        }
+
+        public ActionResult Resized(string path, int width, int height)
+        {
+            string absolutePath = Settings.Singleton.GetAbsolutePath(path);
+
+            var fi = new FileInfo(absolutePath);
+
+            if (!fi.Exists)
+            {
+                return HttpNotFound();
+            }
+
+            var settings = new ResizeSettings
+            {
+                Format = "jpg",
+                BackgroundColor = Color.Black,
+                Anchor = ContentAlignment.MiddleCenter,
+                Width = width,
+                Height = height,
+                Mode = FitMode.Stretch
+            };
+
+            using (var ms = new MemoryStream())
+            {
+                ImageBuilder.Current.Build(absolutePath, ms, settings);
+
+                return File(ms.ToArray(), "image/jpeg");
+            }
         }
 
         public ActionResult Raw(string path)

@@ -46,6 +46,13 @@
                     loaded = true;
                 });
             }
+
+            $('#main-image').on('load.replace', function () {
+                $('#main-image').off('load.replace');
+                var url = '@Url.Action("Resized", new {path = Model.Item.RelativeName})';
+                url += '&width=' + $('#main-image').width() + '&height=' + $('#main-image').height();
+                $('#main-image').attr('src', url);
+            });
         });
 
     </script>
@@ -55,7 +62,7 @@
 
 <div style="position: relative">
     <a href="@Url.Action("Raw", new {path = Model.Item.RelativeName})" target="_blank">
-        <img id="main-image" src="@Url.Action("Raw", new {path = Model.Item.RelativeName})" />
+        <img id="main-image" src="@Url.Action("PlaceHolder", new {width = Model.Width, height = Model.Height})" />
     </a>
     
     @foreach (var face in Model.Faces)
@@ -103,6 +110,10 @@
         <tr>
             <td>Aperture</td>
             <td>@Model.GetExifData(ExifTags.FNumber).Or("-")</td>
+        </tr>
+        <tr>
+            <td>Focal length</td>
+            <td>@Model.GetExifData(ExifTags.FocalLength).Or("-")</td>
         </tr>
     </table>
 </div>

@@ -108,7 +108,15 @@ namespace ImageBrowser.Models
                     return string.Format("{0} mm", value);
 
                 case ExifTags.ExposureTime:
-                    return string.Format("1/{0} s", 1/(double) value);
+                    var v = (double) value;
+                    if (v < 1)
+                    {
+                        return string.Format(CultureInfo.InvariantCulture, "1/{0} s", 1 / v);
+                    }
+                    else
+                    {
+                        return string.Format(CultureInfo.InvariantCulture, "{0} s", v);
+                    }
 
                 case ExifTags.MakerNote:
                 case ExifTags.UserComment:
@@ -122,7 +130,7 @@ namespace ImageBrowser.Models
                 case ExifTags.DateTimeOriginal:
                     DateTime dt;
                     _exif.GetTagValue(tag, out dt);
-                    return string.Format("{0:ddd, yyyy-MM-dd HH:mm:ss}", dt);
+                    return string.Format("{0:ddd, yyyy-MMM-dd HH:mm:ss}", dt);
 
                 default:
                     return value.ToString();
